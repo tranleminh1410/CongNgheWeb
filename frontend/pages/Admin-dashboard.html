@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản trị – CTXH DUT</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/admin-funds.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<header>
+  <div class="nav-container">
+        <a href="../pages/index.html" class="logo">
+            <img src="../assets/img/dut-logo.png" alt="Logo DUT" class="logo-mark">
+            <span>CTXH<span class="logo-dut">DUT</span></span>
+            <span style="font-size:12px;font-weight:400;color:#475569">Admin</span>
+        </a>
+    <nav class="nav-link">
+      <a href="../pages/index.html">← Trang chủ</a>
+    </nav>
+    <div class="nav-right" id="navActions">
+      <button class="login">Đăng Nhập</button>
+    </div>
+  </div>
+</header>
+
+<div class="page-body">
+  <div class="admin-wrap">
+
+    <!-- Sidebar -->
+    <aside class="adm-sidebar">
+      <div class="adm-group-lbl">Tổng quan</div>
+      <button class="adm-item active" data-p="overview" onclick="showP('overview')">
+        <span class="ico"><i class="fa-solid fa-bars"></i></span> Bảng điều khiển
+      </button>
+
+      <div class="adm-group-lbl" style="margin-top:6px">Quản lý</div>
+      <button class="adm-item" data-p="members" onclick="showP('members')">
+        <span class="ico"><i class="fa-solid fa-user-group"></i></span> Thành viên
+      </button>
+      <button class="adm-item" data-p="activities" onclick="showP('activities')">
+        <span class="ico"><i class="fa-solid fa-heart"></i></span> Hoạt động
+      </button>
+      <button class="adm-item" data-p="posts" onclick="showP('posts')">
+        <span class="ico"><i class="fa-solid fa-newspaper"></i></span> Tin tức
+      </button>
+      <button class="adm-item" data-p="funds" onclick="showP('funds')">
+        <span class="ico"><i class="fa-solid fa-wallet"></i></span> Quỹ CLB
+      </button>
+
+      <div class="adm-group-lbl" style="margin-top:6px" id="adminGrpLbl">Admin</div>
+      <button class="adm-item" data-p="users" onclick="showP('users')" id="usersBtn">
+        <span class="ico"><i class="fa-solid fa-user"></i></span> Người dùng
+      </button>
+      <button class="adm-item" data-p="logs" onclick="showP('logs')" id="logsBtn">
+        <span class="ico"><i class="fa-solid fa-clock-rotate-left"></i></span> Lịch sử
+      </button>
+    </aside>
+
+    <!-- Main content -->
+    <main class="adm-main">
+
+      <!-- OVERVIEW -->
+      <div class="adm-panel active" id="p-overview">
+        <div class="adm-header">
+          <h2><i class="fa-solid fa-bars"></i> Bảng điều khiển</h2>
+          <span id="dateLabel" style="font-size:13px;color:#111827"></span>
+        </div>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="stat-ico r"><i class="fa-solid fa-user-group"></i></div>
+            <div><div class="stat-num" id="sMembers">—</div><div class="stat-lbl">Thành viên</div></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-ico b"><i class="fa-solid fa-heart"></i></div>
+            <div><div class="stat-num" id="sOpenActs">—</div><div class="stat-lbl">Hoạt động đang mở</div></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-ico g"><i class="fa-solid fa-newspaper"></i></div>
+            <div><div class="stat-num" id="sPosts">—</div><div class="stat-lbl">Bài viết</div></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-ico y"><i class="fa-solid fa-calendar-alt"></i></div>
+            <div><div class="stat-num" id="sAllActs">—</div><div class="stat-lbl">Tổng hoạt động</div></div>
+          </div>
+        </div>
+        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:22px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:14px">Truy cập nhanh</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn-primary btn-sm" onclick="showP('members')"><i class="fa-solid fa-plus"></i> Thêm thành viên</button>
+            <button class="btn-outline btn-sm" onclick="showP('activities')"><i class="fa-solid fa-plus"></i> Tạo hoạt động</button>
+            <button class="btn-outline btn-sm" onclick="showP('posts')"><i class="fa-solid fa-plus"></i> Đăng bài viết</button>
+          </div>
+        </div>
+
+      <div class="dashboard-charts-grid">
+  <div class="dashboard-chart-card">
+    <div class="dashboard-chart-header">
+      <div>
+        <h3>Hoạt động theo tháng</h3>
+        <p>Số lượng hoạt động được tổ chức trong năm hiện tại</p>
+      </div>
+      <input id="activitiesByMonthChartYear" class="dashboard-chart-year" type="number" min="2020" onchange="loadActivitiesByMonthLineChart()" aria-label="Năm thống kê hoạt động">
+    </div>
+    <canvas id="activitiesByMonthLineChart"></canvas>
+  </div>
+
+  <div class="dashboard-chart-card">
+    <div class="dashboard-chart-header">
+      <div>
+        <h3>Top hoạt động nhiều đăng ký</h3>
+        <p>Những hoạt động thu hút nhiều thành viên nhất</p>
+      </div>
+    </div>
+    <div id="topActivitiesList" class="top-activities-list">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <div class="dashboard-chart-card dashboard-chart-card-wide">
+    <div class="dashboard-chart-header">
+      <div>
+        <h3>Thu / chi quỹ theo tháng</h3>
+        <p>So sánh tổng thu, tổng chi và chênh lệch quỹ trong năm hiện tại</p>
+      </div>
+      <input id="fundMonthlyChartYear" class="dashboard-chart-year" type="number" min="2020" onchange="loadFundMonthlyChart()" aria-label="Năm thống kê thu chi quỹ">
+    </div>
+    <canvas id="fundMonthlyChart"></canvas>
+    <div id="fundMonthlyChartMessage" class="dashboard-chart-message" style="display:none"></div>
+  </div>
+</div>
+      </div>
+      <!-- MEMBERS -->
+      <div class="adm-panel" id="p-members">
+        <div class="adm-header">
+          <h2><i class="fa-solid fa-user-group"></i> Quản lý thành viên</h2>
+          <div style="display:flex;gap:8px">
+            <button id="memberApplicationsBtn" class="btn-outline btn-sm" onclick="openMemberApplicationsModal()" style="position:relative">
+                <i class="fa-solid fa-file-signature"></i> Hồ sơ
+                <span id="memberApplicationsBadge" style="display:none;position:absolute;top:-7px;right:-7px;width:18px;height:18px;border-radius:50%;background:#ef4444;color:#fff;font-size:12px;font-weight:800;line-height:18px;text-align:center;box-shadow:0 4px 10px rgba(239,68,68,.35)">!</span>
+              </button>
+              <button class="btn-outline btn-sm" onclick="loadMemberStats()">
+              <i class="fa-solid fa-chart-pie"></i> Thống kê
+            </button>
+            <button class="btn-primary btn-sm" onclick="openMemberModal()">
+              <i class="fa-solid fa-plus"></i> Thêm
+            </button>
+          </div>
+        </div>
+        <div id="memberStatsRow" style="display:none;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#111827" id="ms-total">—</div>
+            <div style="font-size:11px;color:#111827;text-transform:uppercase;letter-spacing:.04em;margin-top:3px">Tổng thành viên</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#16a34a" id="ms-active">—</div>
+            <div style="font-size:11px;color:#111827;text-transform:uppercase;letter-spacing:.04em;margin-top:3px">Đang hoạt động</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#dc2626" id="ms-inactive">—</div>
+            <div style="font-size:11px;color:#111827;text-transform:uppercase;letter-spacing:.04em;margin-top:3px">Ngừng hoạt động</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#b45309" id="ms-new">—</div>
+            <div style="font-size:11px;color:#111827;text-transform:uppercase;letter-spacing:.04em;margin-top:3px">Mới tháng này</div>
+          </div>
+        </div>
+        <div class="filter-bar" style="margin-bottom:18px">
+          <input id="mSearch" placeholder="🔍 Tìm tên, email..." oninput="searchMembersAdmin()" style="flex:2">
+          <select id="mStatus" onchange="searchMembersAdmin()" aria-label="Lọc theo trạng thái">
+            <option value="">Tất cả trạng thái</option>
+            <option value="Active">Hoạt động</option>
+            <option value="Inactive">Ngừng</option>
+            <option value="Suspended">Tạm đình chỉ</option>
+          </select>
+          <select id="mFaculty" onchange="searchMembersAdmin()" aria-label="Lọc theo khoa">
+            <option value="">Tất cả khoa</option>
+            <option value="Điện tử - Viễn thông">Điện tử - Viễn thông</option>
+            <option value="Công nghệ thông tin">Công nghệ thông tin</option>
+            <option value="Cơ khí">Cơ khí</option>
+            <option value="Xây dựng">Xây dựng</option>
+            <option value="Kiến trúc">Kiến trúc</option>
+            <option value="Hóa">Hóa</option>
+            <option value="Môi trường">Môi trường</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Thành viên</th><th>Lớp</th><th>Khoa</th><th>Chức vụ</th><th>Trạng thái</th><th>Thao tác</th></tr>
+            </thead>
+            <tbody id="mBody">
+              <tr><td colspan="7" class="loading"><div class="spinner"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="mPagination" class="admin-pagination"></div>
+      </div>
+
+      <!-- ACTIVITIES -->
+      <div class="adm-panel" id="p-activities">
+        <div class="adm-header">
+          <h2><i class="fa-solid fa-heart"></i> Quản lý hoạt động</h2>
+          <button class="btn-primary btn-sm" onclick="openActModal()">
+            <i class="fa-solid fa-plus"></i> Tạo hoạt động
+          </button>
+        </div>
+        <div class="admin-filter-bar">
+          <input id="activitySearch" class="form-control" placeholder="Tìm tên hoạt động, địa điểm..." oninput="searchActivitiesAdmin()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Tên hoạt động</th><th>Thời gian</th>
+                <th>Ngày mở ĐK</th><th>Hạn đăng ký</th><th>Địa điểm</th>
+                <th>Đăng ký</th><th>Trạng thái</th><th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="aBody">
+              <tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="aPagination" class="admin-pagination"></div>
+      </div>
+
+      <!-- POSTS -->
+      <div class="adm-panel" id="p-posts">
+        <div class="adm-header">
+          <h2><i class="fa-solid fa-newspaper"></i> Quản lý tin tức</h2>
+          <button class="btn-primary btn-sm" onclick="openPostModal()">
+            <i class="fa-solid fa-plus"></i> Đăng bài viết
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+               <tr><th>ID</th><th>Tiêu đề</th><th>Danh mục</th><th>Người đăng</th><th>Ngày đăng</th><th>Trạng thái</th><th>Thao tác</th></tr>
+            </thead>
+            <tbody id="pBody">
+              <tr><td colspan="7" class="loading"><div class="spinner"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="adm-panel" id="p-funds">
+        <div class="adm-header">
+          <h2><i class="fa-solid fa-wallet"></i> Quản lý quỹ CLB</h2>
+          <button class="btn-primary btn-sm" onclick="FundPanel.openTransactionModal()">
+            <i class="fa-solid fa-plus"></i> Tạo giao dịch
+          </button>
+        </div>
+
+        <div class="fund-grid">
+          <section class="fund-overview-grid">
+            <div class="fund-card">
+              <div class="fund-card-label">Số dư hiện tại</div>
+              <div class="fund-card-value" id="fundBalance">—</div>
+            </div>
+            <div class="fund-card">
+              <div class="fund-card-label">Thu tháng này</div>
+              <div class="fund-card-value income" id="fundIncomeMonth">—</div>
+            </div>
+            <div class="fund-card">
+              <div class="fund-card-label">Chi tháng này</div>
+              <div class="fund-card-value expense" id="fundExpenseMonth">—</div>
+            </div>
+            <div class="fund-card">
+              <div class="fund-card-label">Chờ duyệt</div>
+              <div class="fund-card-value pending" id="fundPending">—</div>
+            </div>
+          </section>
+
+          <section class="fund-section">
+            <div class="fund-section-head">
+              <h3>Giao dịch</h3>
+              <div class="fund-toolbar compact">
+                <input id="fundTxSearch" aria-label="Tìm kiếm giao dịch quỹ" placeholder="Tìm giao dịch..." oninput="FundPanel.renderTransactions()">
+                <select id="fundTxStatus" aria-label="Lọc giao dịch theo trạng thái" onchange="FundPanel.loadTransactions()">
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="Pending">Chờ duyệt</option>
+                  <option value="Approved">Đã duyệt</option>
+                  <option value="Rejected">Từ chối</option>
+                </select>
+                <select id="fundTxType" aria-label="Lọc giao dịch theo loại" onchange="FundPanel.loadTransactions()">
+                  <option value="">Tất cả loại</option>
+                  <option value="Income">Thu</option>
+                  <option value="Expense">Chi</option>
+                </select>
+              </div>
+            </div>
+            <div id="fundTxTableWrap" class="fund-section-body table-wrap">
+              <table>
+                <thead>
+                  <tr><th>ID</th><th>Loại</th><th>Số tiền</th><th>Danh mục</th><th>Hoạt động</th><th>Người thực hiện</th><th>Ngày</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                </thead>
+                <tbody id="fundTxBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="fund-section">
+            <div class="fund-section-head">
+              <h3>Duyệt giao dịch</h3>
+            </div>
+            <div id="fundPeriodTableWrap" class="fund-section-body table-wrap">
+              <table>
+                <thead>
+                  <tr><th>ID</th><th>Loại</th><th>Số tiền</th><th>Danh mục</th><th>Người tạo</th><th>Thao tác</th></tr>
+                </thead>
+                <tbody id="fundApprovalBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="fund-section">
+            <div class="fund-section-head">
+              <h3>Đợt thu quỹ</h3>
+              <div class="fund-toolbar compact">
+                <input id="fundPeriodSearch" aria-label="Tìm kiếm đợt thu quỹ" placeholder="Tìm đợt thu..." oninput="FundContributionPanel.renderPeriods()">
+                <button class="btn-outline btn-sm" onclick="FundContributionPanel.openPeriodModal()">
+                  <i class="fa-solid fa-plus"></i> Tạo đợt thu
+                </button>
+              </div>
+            </div>
+            <div class="fund-section-body table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Đợt thu</th><th>Kỳ</th><th>Mỗi thành viên</th><th>Đã nộp</th><th>Đã thu</th><th>Còn thiếu</th><th>Hạn nộp</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                </thead>
+                <tbody id="fundPeriodBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="fund-section">
+            <div class="fund-section-head">
+              <h3>Báo cáo</h3>
+              <div class="fund-toolbar compact">
+                <input id="fundReportYear" type="number" value="2026" min="2020" aria-label="Năm báo cáo quỹ" onchange="FundPanel.loadReport()">
+                <select id="fundReportMonth" aria-label="Tháng báo cáo quỹ" onchange="FundPanel.loadReport()">
+                  <option value="">Cả năm</option>
+                  <option value="1">Tháng 1</option><option value="2">Tháng 2</option>
+                  <option value="3">Tháng 3</option><option value="4">Tháng 4</option>
+                  <option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+                  <option value="7">Tháng 7</option><option value="8">Tháng 8</option>
+                  <option value="9">Tháng 9</option><option value="10">Tháng 10</option>
+                  <option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                </select>
+                <button class="btn-outline btn-sm" onclick="FundPanel.exportReportExcel()">
+                  <i class="fa-solid fa-file-excel"></i> Xuất Excel
+                </button>
+              </div>
+            </div>
+            <div class="fund-section-body">
+              <div class="fund-overview-grid" style="margin-bottom:16px">
+                <div class="fund-card"><div class="fund-card-label">Tổng thu</div><div class="fund-card-value income" id="fundReportIncome">—</div></div>
+                <div class="fund-card"><div class="fund-card-label">Tổng chi</div><div class="fund-card-value expense" id="fundReportExpense">—</div></div>
+                <div class="fund-card"><div class="fund-card-label">Chênh lệch</div><div class="fund-card-value" id="fundReportNet">—</div></div>
+              </div>
+              <div id="fundReportDetailWrap" class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Ngày</th>
+                      <th>Loại</th>
+                      <th>Số tiền</th>
+                      <th>Danh mục</th>
+                      <th>Hoạt động</th>
+                      <th>Người thực hiện</th>
+                      <th>Mô tả</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fundReportTransactions"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <!-- FIX: Thêm filter bar + stats + pagination đầy đủ cho UsersPanel -->
+      <div class="adm-panel" id="p-users">
+        <div class="adm-header">
+          <h2><i class="fa-solid fa-user"></i> Người dùng</h2>
+          <button class="btn-outline btn-sm" onclick="UsersPanel.init()">
+            <i class="fa-solid fa-arrow-rotate-right"></i> Làm mới
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#111827" id="uStatTotal">—</div>
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;margin-top:3px">Tổng</div>
+          </div>
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#16a34a" id="uStatActive">—</div>
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;margin-top:3px">Hoạt động</div>
+          </div>
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#dc2626" id="uStatInactive">—</div>
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;margin-top:3px">Vô hiệu</div>
+          </div>
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#b45309" id="uStatNew">—</div>
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;margin-top:3px">Mới tháng này</div>
+          </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-bar" style="margin-bottom:18px">
+          <input id="uSearch" placeholder="🔍 Tìm MSSV, email, họ tên..." oninput="UsersPanel.search()" style="flex:2">
+          <select id="uRoleFilter" onchange="UsersPanel.search()" aria-label="Lọc theo vai trò">
+            <option value="">Tất cả vai trò</option>
+          </select>
+          <select id="uActiveFilter" onchange="UsersPanel.search()" aria-label="Lọc theo trạng thái">
+            <option value="">Tất cả trạng thái</option>
+            <option value="true">Hoạt động</option>
+            <option value="false">Vô hiệu</option>
+          </select>
+          <button class="btn-outline btn-sm" onclick="UsersPanel.resetSearch()">
+            <i class="fa-solid fa-xmark"></i> Xóa lọc
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Người dùng</th>
+                <th>Email</th>
+                <th>Vai trò</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Thống kê</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="uBody">
+              <tr><td colspan="8" class="loading"><div class="spinner"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="uPagination" style="display:flex;gap:6px;justify-content:center;margin-top:16px;flex-wrap:wrap"></div>
+      </div>
+
+      <!-- LOGS -->
+      <!-- FIX: Thêm filter + pagination cho LogsPanel -->
+      <div class="adm-panel" id="p-logs">
+        <div class="adm-header">
+          <h2><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử hệ thống</h2>
+          <button class="btn-outline btn-sm" onclick="LogsPanel.load()">
+            <i class="fa-solid fa-arrow-rotate-right"></i> Làm mới
+          </button>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-bar" style="margin-bottom:18px">
+          <input id="lSearch" placeholder="🔍 Tìm hành động, người dùng..." oninput="LogsPanel.search()" style="flex:2">
+          <select id="lCategory" onchange="LogsPanel.search()" aria-label="Lọc theo loại">
+            <option value="">Tất cả loại</option>
+            <option value="activity">Hoạt động</option>
+            <option value="post">Bài viết</option>
+            <option value="member">Thành viên</option>
+            <option value="user">Người dùng</option>
+            <option value="system">Hệ thống</option>
+            <option value="login">Đăng nhập</option>
+            <option value="fund">Quỹ CLB</option>
+          </select>
+          <button class="btn-outline btn-sm" onclick="LogsPanel.resetSearch()">
+            <i class="fa-solid fa-xmark"></i> Xóa lọc
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Người dùng</th>
+                <th>Hành động</th>
+                <th>Đối tượng</th>
+                <th>Thời gian</th>
+              </tr>
+            </thead>
+            <tbody id="lBody">
+              <tr><td colspan="5" class="loading"><div class="spinner"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="lPagination" style="display:flex;gap:6px;justify-content:center;margin-top:16px;flex-wrap:wrap"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Generic Modal -->
+<div class="modal-overlay" id="gModal">
+  <div class="modal" id="gModalInner" style="max-width:580px"></div>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal" style="max-width:640px" id="detailBody"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../js/app/api.js"></script>
+<script src="../js/app/shared.js"></script>
+<script src="../js/app/auth-modal.js"></script>
+<script src="../js/pages/admin/admin-core.js"></script>
+<script src="../js/pages/admin/admin-members.js"></script>
+<script src="../js/pages/admin/admin-activities.js"></script>
+<script src="../js/pages/admin/admin-posts.js"></script>
+<script src="../js/pages/admin/admin-fund-contributions.js"></script>
+<script src="../js/pages/admin/admin-funds.js"></script>
+<script src="../js/pages/admin/admin-users-logs.js"></script>
+
+</body>
+</html>

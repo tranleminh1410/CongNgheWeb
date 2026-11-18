@@ -1,0 +1,31 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.pdb
+
+# Build
+*.exe
+*.dll
+
+# Node
+node_modules/
+
+# Logs
+*.log
+# Local build checks
+_fund_build_check/
+
+# Local configuration and secrets
+appsettings.Development.json
+appsettings.Local.json
+.env
+.env.*
+!.env.example
+
+# User documents and payment evidence
+backend/CLB_API/WebApplication1/wwwroot/uploads/avatars/
+backend/CLB_API/WebApplication1/wwwroot/uploads/fund-receipts/
+backend/CLB_API/WebApplication1/wwwroot/uploads/member-applications/
